@@ -32,12 +32,12 @@ var svg = d3.select("#my_dataviz")
           "translate(" + margin.left + "," + margin.top + ")");
 
 // Parse the Data
-  d3.csv("https://yuyasawa.github.io/InfoVis2020/W12/covid19_hyogo.csv", function(data) {
+  d3.csv("https://yuyasawa19.github.io/InfoVis2020/W12/covid19_hyogo.csv", function(data) {
 
 // X axis
 var x = d3.scaleBand()
   .range([ 0, width ])
-  .domain(data.map(function(d) { return d.Country; }))
+  .domain(data.map(function(d) { return d.Date; }))
   .padding(0.2);
 svg.append("g")
   .attr("transform", "translate(0," + height + ")")
@@ -58,7 +58,7 @@ svg.selectAll("mybar")
   .data(data)
   .enter()
   .append("rect")
-    .attr("x", function(d) { return x(d.Country); })
+    .attr("x", function(d) { return x(d.Date); })
     .attr("width", x.bandwidth())
     .attr("fill", "#ffc34d")
     // no bar at the beginning thus:
@@ -69,8 +69,8 @@ svg.selectAll("mybar")
 svg.selectAll("rect")
   .transition()
   .duration(800)
-  .attr("y", function(d) { return y(d.Value); })
-  .attr("height", function(d) { return height - y(d.Value); })
+  .attr("y", function(d) { return y(d.NewCases); })
+  .attr("height", function(d) { return height - y(d.NewCases); })
   .delay(function(d,i){console.log(i) ; return(i*100)})
 
 })
