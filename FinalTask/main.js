@@ -5,7 +5,7 @@ function main() {
     screen = new KVS.THREEScreen();
 
     screen.init( volume, {
-        width: window.innerWidth * 0.5,
+        width: window.innerWidth * 0.8,
         height: window.innerHeight,
         targetDom: document.getElementById( 'display' ),
         enableAutoResize: false
@@ -62,7 +62,7 @@ function main() {
         if ( shading == "phong" ) {
             vert = shading + ".vert";
             frag = shading + "_" + refrection + ".frag";
-        } else {
+        } else /* if ( shading == "gourand" ) */ {
             vert = shading + "_" + refrection + ".vert";
             frag = shading + ".frag";
         }

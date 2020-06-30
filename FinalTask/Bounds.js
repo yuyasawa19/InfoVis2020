@@ -1,5 +1,4 @@
-function Bounds( volume )
-{
+function Bounds( volume ) {
     var geometry = new THREE.Geometry();
     var material = new THREE.LineBasicMaterial();
 
@@ -36,6 +35,5 @@ function Bounds( volume )
     material.linewidth = 2;
     material.color = new THREE.Color( "black" );
 
-    return new THREE.LineSegments( geometry, material );
-//    return new THREE.Line( geometry, material, THREE.LinePieces );
+    return new THREE.Line( geometry, material, THREE.LinePieces );
 }

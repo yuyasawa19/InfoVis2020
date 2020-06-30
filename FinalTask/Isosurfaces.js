@@ -1,28 +1,43 @@
-function Isosurfaces( volume, isovalue )
-{
-    var geometry = new THREE.Geometry();
-    var material = new THREE.MeshLambertMaterial();
-
+function Isosurfaces( volume, isovalue, vert, frag ) {
     var smin = volume.min_value;
     var smax = volume.max_value;
     isovalue = KVS.Clamp( isovalue, smin, smax );
 
+    var S = ( isovalue - smin ) / ( smax - smin );
+    var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
+    var G = Math.max( Math.cos( ( S - 0.5 ) * Math.PI ), 0.0 );
+    var B = Math.max( Math.cos( S * Math.PI ), 0.0 );
+    var color = new THREE.Color( R, G, B );
+
+    var camera = screen.camera;
+    var light = screen.light;
+
+    var geometry = new THREE.Geometry();
+    var material = new THREE.ShaderMaterial({
+        vertexColors: THREE.VertexColors,
+        vertexShader: document.getElementById( vert ).text,
+        fragmentShader: document.getElementById( frag ).text,
+        uniforms: {
+            light_position: { type: 'v3', value: light.position },
+            camera_direction: { type: 'v3', value: camera.position },
+            my_color: { type: 'v3', value: color }
+        }
+    });
+
     var lut = new KVS.MarchingCubesTable();
     var cell_index = 0;
     var counter = 0;
-    for ( var z = 0; z < volume.resolution.z - 1; z++ )
-    {
-        for ( var y = 0; y < volume.resolution.y - 1; y++ )
-        {
-            for ( var x = 0; x < volume.resolution.x - 1; x++ )
-            {
+
+    for ( var z = 0; z < volume.resolution.z - 1; z++ ) {
+        for ( var y = 0; y < volume.resolution.y - 1; y++ ) {
+            for ( var x = 0; x < volume.resolution.x - 1; x++ ) {
+
                 var indices = cell_node_indices( cell_index++ );
                 var index = table_index( indices );
                 if ( index == 0 ) { continue; }
                 if ( index == 255 ) { continue; }
 
-                for ( var j = 0; lut.edgeID[index][j] != -1; j += 3 )
-                {
+                for ( var j = 0; lut.edgeID[index][j] != -1; j += 3 ) {
                     var eid0 = lut.edgeID[index][j];
                     var eid1 = lut.edgeID[index][j+2];
                     var eid2 = lut.edgeID[index][j+1];
@@ -62,13 +77,11 @@ function Isosurfaces( volume, isovalue )
 
     geometry.computeVertexNormals();
 
-    material.color = new THREE.Color( "white" );
+    material.color = color;
 
-    return new THREE.Mesh( geometry, material );
+    return mesh = new THREE.Mesh( geometry, material );
 
-
-    function cell_node_indices( cell_index )
-    {
+    function cell_node_indices( cell_index ) {
         var lines = volume.resolution.x;
         var slices = volume.resolution.x * volume.resolution.y;
 
@@ -84,8 +97,7 @@ function Isosurfaces( volume, isovalue )
         return [ id0, id1, id2, id3, id4, id5, id6, id7 ];
     }
 
-    function table_index( indices )
-    {
+    function table_index( indices ) {
         var s0 = volume.values[ indices[0] ][0];
         var s1 = volume.values[ indices[1] ][0];
         var s2 = volume.values[ indices[2] ][0];
@@ -108,8 +120,11 @@ function Isosurfaces( volume, isovalue )
         return index;
     }
 
-    function interpolated_vertex( v0, v1, s )
-    {
-        return new THREE.Vector3().addVectors( v0, v1 ).divideScalar( 2 );
+    function interpolated_vertex( v0, v1, s ) {
+        var lines = volume.resolution.x;
+        var slices = volume.resolution.x * volume.resolution.y;
+        var s0 = volume.values[ v0.x + v0.y*lines + v0.z*slices ][0];
+        var s1 = volume.values[ v1.x + v1.y*lines + v1.z*slices ][0];
+        return new THREE.Vector3().addScaledVector( v0, s1 - s ).addScaledVector( v1, s - s0 ).divideScalar( s1 - s0 );
     }
 }
