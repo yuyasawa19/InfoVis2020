@@ -1,13 +1,19 @@
-function Isosurfaces( volume, isovalue, vert, frag ) {
+function Isosurfaces( volume, isovalue, vert, frag, cmap ) {
+
     var smin = volume.min_value;
     var smax = volume.max_value;
     isovalue = KVS.Clamp( isovalue, smin, smax );
 
     var S = ( isovalue - smin ) / ( smax - smin );
-    var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
-    var G = Math.max( Math.cos( ( S - 0.5 ) * Math.PI ), 0.0 );
-    var B = Math.max( Math.cos( S * Math.PI ), 0.0 );
-    var color = new THREE.Color( R, G, B );
+    //var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
+    //var G = Math.max( Math.cos( ( S - 0.5 ) * Math.PI ), 0.0 );
+    //var B = Math.max( Math.cos( S * Math.PI ), 0.0 );
+    //var R = Math.max( Math.cos( ( S - rp ) * Math.PI ), 0.0 );
+    //var G = Math.max( Math.cos( ( S - gp ) * Math.PI ), 0.0 );
+    //var B = Math.max( Math.cos( ( S - bp ) * Math.PI ), 0.0 );
+    //var color = new THREE.Color( R, G, B );
+    var color = new THREE.Color().setHex( cmap[ isovalue ][1] );
+    //var color = new THREE.Color().setHex( cmap[ isovalue ][1] );
 
     var camera = screen.camera;
     var light = screen.light;

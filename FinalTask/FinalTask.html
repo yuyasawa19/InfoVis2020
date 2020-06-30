@@ -28,9 +28,13 @@
             You can change the isovalue within a range of 0 to 255 using slider.<br>
             The current value is shown on the right.<br>
         </p>
+        <h4>Color map</h4>
+        <p>
+            You can change the color map to be used for the visualization by operating the "R", "G" and "B" slide bars.<br>
+        </p>
         <h4>Shading</h4>
         <p>
-            Phong and Ground shadings are available.<br>
+            Phong and Gourand shadings are available.<br>
             However, there may not be much apparent difference between the two methods.<br>
         </p>
         <h4>Reflection</h4>
@@ -564,11 +568,22 @@
         </script>
 
         <!-- User Interface -->
-        <div id="controller" style="width:20%; font-family:Arial; float:left;">
+        <div id="controller" style="width:30%; font-family:Arial; float:left;">
             <h2>Isovalue</h2>
-            <input type="range" min="0" max="255" step="1" id="isovalue" value="100" style="width:70%;"/>
-            &nbsp;<span id="view_isovalue">50</span><br>
+            <input type="range" min="0" max="255" step="1" value="100" id="isovalue" style="width:70%;"/>
+            &nbsp;<span id="view_isovalue">100</span><br>
             <br>
+
+            <h2>Color map</h2>
+            R <input type="range" min="0" max="1" step="0.01" value="1.0" id="red" style="width:70%;"/>
+			&nbsp;<span id="R_val">255</span><br>
+			<br>
+			G <input type="range" min="0" max="1" step="0.01" value="0.5" id="green" style="width:70%;"/>
+			<span id="G_val">128</span><br>
+			<br>
+			B <input type="range" min="0" max="1" step="0.01" value="0.0" id="blue" style="width:70%;"/>
+			<span id="B_val">0</span><br>
+			<br>
 
             <h2>Shading</h2>
             <form id="shading">
@@ -590,27 +605,43 @@
             &emsp;<input type="checkbox" id="ground"/> Ground<br>
             <br>
 
-            <button id="apply" style="width:100%;">Apply</button>
+            <button id="apply" style="width:50%;">Apply</button>
+            <br><br>
 
             <script>
-                var elem = document.getElementById( 'isovalue' );
-                var target = document.getElementById( 'view_isovalue' );
-                target.innerHTML = elem.value;
-                var rangeValue = function( elem, target ) {
+                var elem_is = document.getElementById( 'isovalue' );
+                var elem_r = document.getElementById( 'red' );
+                var elem_g = document.getElementById( 'green' );
+                var elem_b = document.getElementById( 'blue' );
+                var target_is = document.getElementById( 'view_isovalue' );
+                var target_r = document.getElementById( 'R_val' );
+                var target_g = document.getElementById( 'G_val' );
+                var target_b = document.getElementById( 'B_val' );
+                var rangeValue = function( elem, target_is ) {
                     return function( evt ){
-                      target.innerHTML = elem.value;
+                      target_is.innerHTML = elem.value;
                     }
                 }
-                elem.addEventListener( 'input', rangeValue(elem, target) );
+                var rangeValue_color = function( elem_is, target_is ) {
+                    return function( evt ){
+                      target_is.innerHTML = Math.round(elem_is.value * 255);
+                    }
+                }
+                elem_is.addEventListener( 'input', rangeValue(elem_is, target_is) );
+                elem_r.addEventListener( 'input', rangeValue_color(elem_r, target_r) );
+                elem_g.addEventListener( 'input', rangeValue_color(elem_g, target_g) );
+                elem_b.addEventListener( 'input', rangeValue_color(elem_b, target_b) );
             </script>
         </div>
 
         <!-- Display Lobster -->
-        <div id="display" style="width:40%; height:80%; float:left;">
+        <div id="display" style="width:40%; height:90%; float:left;">
         	<script>
         	    main();
         	</script>
         </div>
+        <div id="colorbar" style="width:40%; height:10%; float:left;"></div>
+        <br>
 
     </body>
 </html>
